@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Stream</title>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+        <style>
+        .css-input { padding:10px; font-size:28px; text-align:center; border-width:6px; border-radius:5px; border-style:ridge; border-color:#00779e; font-family:monospace;  }
+        .css-input:focus { outline:none; }
+        .css-input.red-border {border-color:red;}
+        * {
+          box-sizing: border-box;
+        }
+
+        .wrapper {
+          width: 75px;
+          height: 125px;
+          margin: 20px auto 0px auto;
+          position: relative;
+        }
+
+        .main {
+          width: 75px;
+          height: 75px;
+          transform: rotate(43deg) scale(0.8);
+          margin-bottom: 60px;
+          border-radius: 50% 50% 0 50%;
+          background: #faf9f1;
+          background: linear-gradient(270deg, #f6f4eb, #dcd6d2);
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          position: relative;
+          padding: 5px;
+          transition: all 0.5s ease-out;
+          box-shadow: 0 0 5px rgba(150, 100, 100, 0.3), 3px 3px 8px rgba(150, 100, 100, 0.3);
+          /* Tim Pietrusky's proposal : */
+          /* box-shadow:
+          	0 0px 8px rgba(50, 50, 50, 0.4),
+          	3px 3px 8px rgba(150, 100, 100, 0.3); */
+        }
+
+        .inner {
+          width: 100%;
+          height: 100%;
+          background: #faf9f1;
+          background: linear-gradient(270deg, #fafaf2, #ece7e1);
+          border-radius: inherit;
+        }
+
+        input[type=radio] {
+          clip: rect(0 0 0 0);
+          position: absolute;
+          visibility: hidden;
+        }
+
+        input[type=radio]:checked ~ .main {
+          transform: rotate(68deg) scale(0.8);
+        }
+
+        #play:checked ~ .main {
+          transform: rotate(21deg) scale(0.8);
+        }
+
+        label {
+          position: absolute;
+          bottom: 0;
+          font-size: 30px;
+          font-family: "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;
+          color: rgba(0, 0, 0, 0.15);
+          text-shadow: 0 1px 0 white, 0 -1px 0 rgba(150, 100, 100, 0.1);
+          text-transform: uppercase;
+          cursor: pointer;
+          transform: scaleX(0.8);
+        }
+
+        label:before {
+          content: "";
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          top: -25px;
+          left: 50%;
+          margin-left: -8px;
+          position: absolute;
+          box-shadow: inset 0 -3px 3px rgba(150, 100, 100, 0.1), 0 2px 3px 1px rgba(150, 100, 100, 0.1);
+        }
+
+        label[for=record] {
+          left: -40px;
+        }
+
+        label[for=play] {
+          right: -40px;
+        }
+        .btn {
+          background: #215261;
+          background-image: -webkit-linear-gradient(top, #215261, #2c7c94);
+          background-image: -moz-linear-gradient(top, #215261, #2c7c94);
+          background-image: -ms-linear-gradient(top, #215261, #2c7c94);
+          background-image: -o-linear-gradient(top, #215261, #2c7c94);
+          background-image: linear-gradient(to bottom, #215261, #2c7c94);
+          -webkit-border-radius: 10;
+          -moz-border-radius: 10;
+          border-radius: 10px;
+          color: #ffffff;
+          font-size: 20px;
+          padding: 10px 20px 10px 20px;
+          text-decoration: none;
+        }
+
+        .btn:hover {
+          background: #50bdde;
+          background-image: -webkit-linear-gradient(top, #50bdde, #286f85);
+          background-image: -moz-linear-gradient(top, #50bdde, #286f85);
+          background-image: -ms-linear-gradient(top, #50bdde, #286f85);
+          background-image: -o-linear-gradient(top, #50bdde, #286f85);
+          background-image: linear-gradient(to bottom, #50bdde, #286f85);
+          text-decoration: none;
+        }
+        .form {
+            margin-top: 50px;
+            text-align: center;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="image-container">
+            <img src="rediscope.png" alt="rediscope"/>
+        </div>
+        <div class="form">
+        <input type="text" class="css-input" placeholder="Channel name">
+        <input type="button" class="btn" value ="GO"/>
+        </div>
+        <div class="wrapper">
+          <input type="radio" name="choice" id="record">
+          <label for="record">REC</label>
+
+          <input type="radio" name="choice" id="play" checked="checked">
+          <label for="play">Play</label>
+
+          <div class="main">
+                <div class="inner"></div>
+            </div>
+        </div>
+
+    <script src="jquery.min.js"></script>
+    <script>
+        var input = $(".css-input"),
+            btn = $(".btn"),
+            play = $("#play"),
+            record = $("#record");
+        btn.on('click', function() {
+            if (input.val() === "") {
+                input.addClass("red-border");
+            } else {
+                var channel = input.val();
+                if (play.is(':checked')) {
+                    window.location.href = "video?channel=" + channel;
+                } else {
+                    window.location.href = "recorder?channel=" + channel;
+                }
+            }
+        });
+        input.on('focus', function(){
+            input.removeClass("red-border");
+        });
+    </script>
+
+        </body></html>

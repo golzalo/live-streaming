@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Stream</title>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+
+    </head>
+    <body>
+        <div class="image-container">
+            <img src="rediscope.png" alt="rediscope"/>
+        </div>
+        <video id="video" autoplay muted></video>
+        <div class="controls">
+            <div class="onoffswitch">
+                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" />
+                <label class="onoffswitch-label" for="myonoffswitch"></label>
+            </div>
+        </div>
+        <h3 class="btn-text ready">Ready to stream...</h3>
+        <h3 class="btn-text streaming">Streaming...</h3>
+
+<div id="message" style="display: none;"></div>
+<script src="https://cdn.webrtc-experiment.com/MediaStreamRecorder.js"> </script>
+<script src="jquery.min.js"></script>
+<script src="binary.min.js"></script>
+<script src="modernizr.min.js"></script>
+<script src="recorder.js"></script>
+        </body></html>
