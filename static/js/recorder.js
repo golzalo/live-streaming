@@ -11,8 +11,10 @@ function init(){
   video = document.getElementById('video');
   videoClient = new BinaryClient("ws://localhost:4705/video-server");
   videoClient.on('open', function (s) {
-    videoStream = videoClient.createStream("golza");
+    var channelName = getUrlParameter('channel');
+    videoStream = videoClient.createStream(channelName);
   });
+  startRecording();
 }
 
 var constraints = {
@@ -66,7 +68,34 @@ function startRecording() {
 
 function stopRecording() {
   mediaRecorder.stop();
+
 }
+
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+        }
+    }
+};
+
+$("#stop").on("click", function (){
+  var channelName = getUrlParameter('channel');
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/stopstream/'+channelName, true);
+  xhr.send();
+  xhr.onload = function(e) {
+    window.location = "/";
+  }
+  
+});
 
 init();
 navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
