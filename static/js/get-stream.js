@@ -3,10 +3,9 @@ var process = function (uInt8Array) {
     parent.buffer.push(file);
     var event = new Event('new-chunk');
     parent.video.dispatchEvent(event);
-
 }
 
-var chunkId = 147906604;
+var chunkId = 0;
 var delay = 1000;
 var min_delay = 9000;
 var max_delay = 20000;
@@ -53,7 +52,6 @@ function getLastId(channelName){
       if (parseInt(rsp) > parseInt(chunkId)){
            chunkId = rsp;
       }
-    
     }
 }
 

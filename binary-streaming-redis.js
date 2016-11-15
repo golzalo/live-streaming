@@ -5,7 +5,7 @@ var base64 = require('base64-stream');
 var Stream = require('stream');
 var redis = require("redis");
 var fs = require("fs");
-path = require('path');
+var path = require('path');
 
 var videoServer = new BinaryServer({server: server, path: '/video-server', port:4705});
 var videoPublisher = redis.createClient({'return_buffers': true});
@@ -26,11 +26,6 @@ server.get('/getwebm/:channel/last-id/:resolution',function(req,res){
 
 });
 
-function getLastFileID(channelName, resolution){ //TODO mejorarlo
-  
-  
-}
-
 //GET VIDEO FROM BROWSER AND PUBLISH TO REDIS
 videoServer.on('connection', function(client){
   console.log('Binary Server connection started');
@@ -45,11 +40,19 @@ videoServer.on('connection', function(client){
       }
       if(!videoBuffers.has(channelName)){
         videoPublisher.publish("channels",channelName);
+        redisCli.sadd("allchannels", channelName);
         videoBuffers.add(channelName);
       }
       videoPublisher.publish(channelName,chunk);
     });
   });
+});
+
+server.get('/stopstream/:channel',function(req,res){
+  var channelName = req.params.channel;
+  videoBuffers.delete(channelName);
+  redisCli.srem("allchannels", channelName);
+  res.status(200).send("ok");
 });
 
 server.get('/getwebm/:channel/:id',function(req,res){
@@ -86,6 +89,16 @@ server.get('/getwebm/:channel/:id',function(req,res){
       }
     });    
 });  
+
+server.get('/getChannels',function(req,res){
+    redisCli.smembers("allchannels", function(err, reply) {
+      if (reply == null){
+        res.status(404).send("");
+      }else{
+        res.status(200).send(reply);  
+      }
+    });
+});
 
 server.get('/recorder',function(req,res){
     res.sendFile(__dirname + '/views/recorder.html');
@@ -137,6 +150,10 @@ server.get('/video',function(req,res){
 
 server.get('/',function(req,res){
     res.sendFile(__dirname + '/views/index.html');
+});
+
+server.get('/create',function(req,res){
+    res.sendFile(__dirname + '/views/create.html');
 });
 
 server.listen(SERVER_PORT);
