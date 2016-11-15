@@ -14,11 +14,10 @@
 </head>
 <body>
 <div class="container">
-    
-  <h1>Live channels</h1>
-  <ul class="list-group" id="list-group">loading...
-  </ul>
-  <p><a class="btn btn-primary btn-lg" href="/create" role="button" style="width: 100%">Start streaming</a>
+  <h1>Title</h1>
+  <input type="text" class="form-control" name="title">
+  </br>
+  <p><a class="btn btn-primary btn-lg" href="#" role="button" style="width: 100%">Start streaming</a>
 </div>
 
 </body>
@@ -27,30 +26,4 @@
   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
   crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script type="text/javascript">
-  
-function getAviableChannels(){
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', "/getChannels", true);
-  xhr.responseType = 'text';
-  xhr.send();
-  xhr.onload = function(e) {
-    if (xhr.status == 200){
-      var splittedChannels = JSON.parse(xhr.response);
-      $('#list-group').html("");
-      for (i = 0; i < splittedChannels.length; i++) {
-        $('#list-group').append('<li class="list-group-item"><a href="/video?channel='+splittedChannels[i]+'">'+splittedChannels[i]+'</a></li>');
-      }  
-    } else {
-      $('#list-group').html("No channels aviable right now :(");
-    }
-    setTimeout(function () {getAviableChannels();}, 10000);
-    
-  }
-
-}
-
-getAviableChannels();
-
-</script>
 </html>

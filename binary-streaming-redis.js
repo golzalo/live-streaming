@@ -87,6 +87,16 @@ server.get('/getwebm/:channel/:id',function(req,res){
     });    
 });  
 
+server.get('/getChannels',function(req,res){
+    redisCli.smembers("allchannels", function(err, reply) {
+      if (reply == null){
+        res.status(404).send("");
+      }else{
+        res.status(200).send(reply);  
+      }
+    });
+});
+
 server.get('/recorder',function(req,res){
     res.sendFile(__dirname + '/views/recorder.html');
 });
@@ -137,6 +147,10 @@ server.get('/video',function(req,res){
 
 server.get('/',function(req,res){
     res.sendFile(__dirname + '/views/index.html');
+});
+
+server.get('/create',function(req,res){
+    res.sendFile(__dirname + '/views/create.html');
 });
 
 server.listen(SERVER_PORT);
