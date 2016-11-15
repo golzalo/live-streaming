@@ -46,6 +46,8 @@ videoServer.on('connection', function(client){
       if(!videoBuffers.has(channelName)){
         videoPublisher.publish("channels",channelName);
         videoBuffers.add(channelName);
+        console.log("paso por aca");
+        redisCli.sadd("allchannels", channelName);
       }
       videoPublisher.publish(channelName,chunk);
     });
