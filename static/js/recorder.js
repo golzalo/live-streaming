@@ -14,6 +14,7 @@ function init(){
     var channelName = getUrlParameter('channel');
     videoStream = videoClient.createStream(channelName);
   });
+  $("h1").html(getUrlParameter("channel"));
 }
 
 var constraints = {
