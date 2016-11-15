@@ -120,6 +120,10 @@ server.get('/recorder.js',function(req,res){
     res.sendFile(__dirname + '/static/js/recorder.js');
 });
 
+server.get('/index.js',function(req,res){
+    res.sendFile(__dirname + '/static/js/index.js');
+});
+
 server.get('/video.js',function(req,res){
     res.sendFile(__dirname + '/static/js/video.js');
 });
