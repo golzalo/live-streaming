@@ -16,7 +16,6 @@ function takeFromBuffer(){
 
 function bufferNotification(){
 	if (video.paused == true){
-		console.log("paso por bufferNotification");
 		takeFromBuffer();
 	}
 }

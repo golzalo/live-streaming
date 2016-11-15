@@ -14,7 +14,6 @@ function init(){
     var channelName = getUrlParameter('channel');
     videoStream = videoClient.createStream(channelName);
   });
-  startRecording();
 }
 
 var constraints = {
@@ -25,6 +24,7 @@ var constraints = {
 function handleSuccess(stream) {
   window.stream = stream;
   video.srcObject = stream;
+  startRecording();
 }
 
 function handleError(error) {
