@@ -1,19 +1,16 @@
 var express = require('express');
 var server = express();
 var BinaryServer = require('binaryjs').BinaryServer;
-var base64 = require('base64-stream');
-var Stream = require('stream');
 var redis = require("redis");
 var fs = require("fs");
 var path = require('path');
+var Channel = require('./channel');
 
 var videoServer = new BinaryServer({server: server, path: '/video-server', port:4705});
 var videoPublisher = redis.createClient({'return_buffers': true});
 var redisCli = redis.createClient();
 
 var SERVER_PORT = 8080;
-
-var videoBuffers = new Set();
 
 function getChannelNameFromUrl(url){
   return url.split('?')[1].split('=')[1];
@@ -28,29 +25,16 @@ server.get('/getwebm/:channel/last-id/:resolution',function(req,res){
 
 //GET VIDEO FROM BROWSER AND PUBLISH TO REDIS
 videoServer.on('connection', function(client){
-  console.log('Binary Server connection started');
-
   client.on('stream', function(stream, channelName) {
-    console.log('>>>Incoming Video stream');
+    var channel = new Channel(channelName);
     stream.on("data",function(chunk){
-      var milliseconds = new Date().getTime();
-      var seconds = parseInt(milliseconds/10000);
-      if (!fs.existsSync("content/"+channelName)){
-        fs.mkdirSync("content/"+channelName);
-      }
-      if(!videoBuffers.has(channelName)){
-        videoPublisher.publish("channels",channelName);
-        redisCli.sadd("allchannels", channelName);
-        videoBuffers.add(channelName);
-      }
-      videoPublisher.publish(channelName,chunk);
+      channel.stream(chunk);
     });
   });
 });
 
 server.get('/stopstream/:channel',function(req,res){
   var channelName = req.params.channel;
-  videoBuffers.delete(channelName);
   redisCli.srem("allchannels", channelName);
   res.status(200).send("ok");
 });
