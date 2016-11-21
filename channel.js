@@ -7,8 +7,9 @@ var redisCli = redis.createClient();
 
 
 var Channel = function (channelName) {
-  this.channelName = channelName;
-  this.id = channelName.toString().hashCode();
+  var seed = Math.floor(Math.random()*100000);
+  this.channelName = channelName.toString()+"_"+seed;
+  this.id = this.channelName.toString().hashCode();
   videoPublisher.publish("channels",this.id);
   redisCli.sadd("allchannels", this.channelName);
 };
