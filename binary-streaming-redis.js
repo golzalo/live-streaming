@@ -5,6 +5,7 @@ var redis = require("redis");
 var fs = require("fs");
 var path = require('path');
 var Channel = require('./channel');
+require('./hash');
 
 var videoServer = new BinaryServer({server: server, path: '/video-server', port:4705});
 var videoPublisher = redis.createClient({'return_buffers': true});
@@ -17,7 +18,8 @@ function getChannelNameFromUrl(url){
 }
 
 server.get('/getwebm/:channel/last-id/:resolution',function(req,res){
-  redisCli.get(req.params.channel+"_"+req.params.resolution, function(err, reply) {
+  var baseKey = req.params.channel.toString().hashCode();
+  redisCli.get(baseKey+"_"+req.params.resolution, function(err, reply) {
     res.status(200).send(reply);
   });
 
@@ -38,7 +40,7 @@ videoServer.on('connection', function(client){
 });
 
 server.get('/getwebm/:channel/:id',function(req,res){
-    var channelName = req.params.channel;
+    var channelName = req.params.channel.toString().hashCode();
     var id = req.params.id;
     var tms = id.split("_")[0];
     var resolution = id.split("_")[1];
