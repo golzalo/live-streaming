@@ -88,14 +88,7 @@ var getUrlParameter = function getUrlParameter(sParam) {
 };
 
 $("#stop").on("click", function (){
-  var channelName = getUrlParameter('channel');
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', '/stopstream/'+channelName, true);
-  xhr.send();
-  xhr.onload = function(e) {
-    window.location = "/";
-  }
-  
+  window.location = "/";
 });
 
 init();

@@ -1,5 +1,5 @@
 title with spaces
 user login
 database for auth
-check if the channel exists
-un-hardcoded golza channel
+topic (rabbitMQ?)
+hls

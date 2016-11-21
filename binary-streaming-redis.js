@@ -25,18 +25,16 @@ server.get('/getwebm/:channel/last-id/:resolution',function(req,res){
 
 //GET VIDEO FROM BROWSER AND PUBLISH TO REDIS
 videoServer.on('connection', function(client){
+  var channel;
   client.on('stream', function(stream, channelName) {
-    var channel = new Channel(channelName);
+    channel = new Channel(channelName);
     stream.on("data",function(chunk){
       channel.stream(chunk);
     });
   });
-});
-
-server.get('/stopstream/:channel',function(req,res){
-  var channelName = req.params.channel;
-  redisCli.srem("allchannels", channelName);
-  res.status(200).send("ok");
+  client.on('close', function (){
+    channel.close();
+  });
 });
 
 server.get('/getwebm/:channel/:id',function(req,res){

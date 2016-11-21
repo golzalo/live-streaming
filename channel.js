@@ -18,4 +18,9 @@ Channel.prototype.stream = function (chunk) {
   videoPublisher.publish(this.channelName,chunk);
 };
 
+Channel.prototype.close = function () {
+	redisCli.srem("allchannels", this.channelName);
+	videoPublisher.publish("unsubscribe",this.channelName);
+}
+
 module.exports = Channel;

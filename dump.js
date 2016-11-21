@@ -6,10 +6,13 @@ var videoPublisher = redis.createClient();
 var videoSubscriber = redis.createClient({'return_buffers': true});
 
 videoSubscriber.subscribe("channels");
+videoSubscriber.subscribe("unsubscribe");
 
 videoSubscriber.on("message", function(channel, data) {
   if(channel == "channels"){
-    videoSubscriber.subscribe(data);    
+    videoSubscriber.subscribe(data);
+  } else if(channel == "unsubscribe"){
+    videoSubscriber.unsubscribe(data);
   }else{
     var milliseconds = new Date().getTime();
     var seconds = parseInt(milliseconds/10000);
