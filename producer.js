@@ -1,26 +1,13 @@
-var readline = require('readline');
-var RabbitMQClient = require('./RabbitMQClient');
+var amqp = require('amqplib/callback_api');
 
-var execute = function () {
-	rabbit.startPublisher();
-	setInterval(function() {
-		if (queueMsgs.length > 0){
-			rabbit.publish("", "jobs", new Buffer(queueMsgs.shift()));	
-		}
-	}, 1000);
+amqp.connect('amqp://localhost', function(err, conn) {
+  conn.createChannel(function(err, ch) {
+    var q = 'task_queue4';
+	var msg = process.argv.slice(2).join(' ') || "Hello World!";
 
-}
-
-var rabbit = new RabbitMQClient("amqp://localhost?heartbeat=60", execute);
-
-var rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  terminal: false
+	ch.assertQueue(q, {durable: false});
+	ch.sendToQueue(q, new Buffer(msg), {persistent: false});
+	console.log(" [x] Sent '%s'", msg);
+  });
+  setTimeout(function() { conn.close(); process.exit(0) }, 500);
 });
-
-var queueMsgs = [];
-
-rl.on('line', function(line){
-    queueMsgs.push(line);
-})
