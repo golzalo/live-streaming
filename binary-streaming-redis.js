@@ -8,7 +8,6 @@ var Channel = require('./channel');
 require('./hash');
 
 var videoServer = new BinaryServer({server: server, path: '/video-server', port:4705});
-var videoPublisher = redis.createClient({'return_buffers': true});
 var redisCli = redis.createClient();
 
 var SERVER_PORT = 8080;
