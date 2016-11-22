@@ -14,7 +14,7 @@ videoSubscriber.on("message", function(channel, data) {
 });
 
 var process = function (key, data) {
-	var cmd = "ffmpeg -i '"+data+"' -s 320x240 -crf 51 -preset ultrafast "+data.replace("640x480", key);
+	var cmd = "ffmpeg -i '"+data+"' -codec:v libvpx -s "+key+" -crf 51 -preset ultrafast "+data.replace("640x480", key);
 	var channelName = data.split("/")[1]
 	var seconds = data.substring(data.indexOf(channelName+"/")+(channelName.length+1), data.indexOf("_"));
 	exec(cmd, function(error, stdout, stderr){

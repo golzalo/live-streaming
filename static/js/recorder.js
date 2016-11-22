@@ -18,8 +18,8 @@ function init(){
 }
 
 var constraints = {
-  audio: true,
-  video: true
+  video: true,
+  audio:true
 };
 
 function handleSuccess(stream) {
