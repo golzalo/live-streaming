@@ -19,7 +19,6 @@
  "dependencies": {
    "binaryjs": "^0.2.1",
    "express": "^4.13.4",
-   "redis": "^2.5.3",
-   "fluent-ffmpeg": "2.1.0" 
+   "redis": "^2.5.3"
  }
 }

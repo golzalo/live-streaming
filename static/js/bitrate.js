@@ -1,6 +1,6 @@
 var timeOfChunkVideo = 10000; // because I know the chunks are from 10 seconds video
 var lastThreeCalls = [];
-var definitions = ["320x240","640x480"];
+var definitions = ["160x120","320x240","640x480"];
 var actualDefinition = 0;
 
 function getResolution(){
