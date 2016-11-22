@@ -2,27 +2,45 @@ var redis = require("redis");
 var fs = require("fs");
 path = require('path');
 
-var videoPublisher = redis.createClient();
-var videoSubscriber = redis.createClient({'return_buffers': true});
+var redisCli = redis.createClient({'return_buffers': true});
+var videoSubscriber = redis.createClient();
+var buffer = [];
+
 
 videoSubscriber.subscribe("channels");
-videoSubscriber.subscribe("unsubscribe");
 
 videoSubscriber.on("message", function(channel, data) {
-  if(channel == "channels"){
-    videoSubscriber.subscribe(data);
-  } else if(channel == "unsubscribe"){
-    videoSubscriber.unsubscribe(data);
-  }else{
-    var milliseconds = new Date().getTime();
-    var seconds = parseInt(milliseconds/10000);
-    if (!fs.existsSync("content/"+channel)){
-      fs.mkdirSync("content/"+channel);
-    }
-    var filename = "content/"+channel+"/"+seconds+"_640x480.webm";
-    fs.writeFile(filename, data, "binary", function(err) {});
-    videoPublisher.set(channel+"_640x480",seconds);
-    videoPublisher.expire(channel+"_640x480", 190);
-    videoPublisher.publish("process",filename);
-  }
+  buffer.push(data);
 });
+
+var process = function (channel, data) {
+  var milliseconds = new Date().getTime();
+  var seconds = parseInt(milliseconds/10000);
+  if (!fs.existsSync("content/"+channel)){
+    fs.mkdirSync("content/"+channel);
+  }
+  var filename = "content/"+channel+"/"+seconds+"_640x480.webm";
+  fs.writeFile(filename, data, "binary", function(err) {});
+  redisCli.set(channel+"_640x480",seconds);
+  redisCli.expire(channel+"_640x480", 200);
+  redisCli.lpush("320x240",filename);
+  redisCli.publish("process","320x240");
+  redisCli.lpush("160x120",filename);
+  redisCli.publish("process","160x120");
+}
+
+function loop(){
+  if (buffer.length > 0){
+    var key = buffer.shift().toString();
+    redisCli.rpop(key, function(err, data) {
+      if (data != null){
+        process(key, data);
+      }
+      loop();
+    });
+  } else {
+    setTimeout(loop, 1000);
+  }  
+}
+
+loop();
