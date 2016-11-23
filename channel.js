@@ -20,6 +20,7 @@ Channel.prototype.stream = function (chunk) {
 
 Channel.prototype.close = function () {
 	redisCli.srem("allchannels", this.channelName);
+	redisCli.append(this.id+"_list", ",end");
 }
 
 module.exports = Channel;

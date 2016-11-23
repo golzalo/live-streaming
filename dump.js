@@ -21,6 +21,8 @@ var process = function (channel, data) {
   }
   var filename = "content/"+channel+"/"+seconds+"_640x480.webm";
   fs.writeFile(filename, data, "binary", function(err) {});
+  redisCli.append(channel+"_list", ","+seconds);
+
   redisCli.set(channel+"_640x480",seconds);
   redisCli.expire(channel+"_640x480", 200);
   redisCli.lpush("320x240",filename);
