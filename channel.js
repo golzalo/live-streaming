@@ -19,7 +19,7 @@ Channel.prototype.stream = function (chunk) {
 };
 
 Channel.prototype.close = function () {
-	redisCli.srem("allchannels", this.channelName);
+	redisCli.srem("allchannels", this.channelName+":"+this.id);
 	var m3u8File = "content/"+this.id+"/out.m3u8";
 	var final_line = "#EXT-X-ENDLIST";
 	fs.appendFile(m3u8File, final_line, function (err) {});
