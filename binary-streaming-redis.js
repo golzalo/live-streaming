@@ -16,14 +16,6 @@ function getChannelNameFromUrl(url){
   return url.split('?')[1].split('=')[1];
 }
 
-server.get('/getwebm/:channel/last-id/:resolution',function(req,res){
-  var baseKey = req.params.channel.toString().hashCode();
-  redisCli.get(baseKey+"_"+req.params.resolution, function(err, reply) {
-    res.status(200).send(reply);
-  });
-
-});
-
 //GET VIDEO FROM BROWSER AND PUBLISH TO REDIS
 videoServer.on('connection', function(client){
   var channel;
@@ -38,39 +30,18 @@ videoServer.on('connection', function(client){
   });
 });
 
-server.get('/getwebm/:channel/:id',function(req,res){
-    var channelName = req.params.channel.toString().hashCode();
-    var id = req.params.id;
-    var tms = id.split("_")[0];
-    var resolution = id.split("_")[1];
-    redisCli.get(channelName+"_"+resolution, function(err, last_from_channel) {
-      if (parseInt(last_from_channel) <= parseInt(tms)){
-        res.status(404).send('greater');
-      }else {
-        var file_path = "content/"+channelName;
-        var file_name = id+".webm";
-        fs.stat(file_path+"/"+file_name, function(err, stat) {
-            if(err != null && err.code == 'ENOENT') {
-                res.status(404).send('Not found');
-            } else if(err != null) {
-                console.error('Some other error: ', err.code);
-            } else{
-              var filePath = path.join(file_path,file_name);
-              var stat = fs.statSync(filePath);
+server.get('/getwebm/:channel/:file',function(req,res){
+    var filePath = path.join('content/'+req.params.channel,req.params.file);
+    var stat = fs.statSync(filePath);
 
-              res.writeHead(200, {
-                  'Content-Type': 'video/webm',
-                  'Content-Length': stat.size,
-                  'Access-Control-Allow-Origin':'*',
-                  'Access-Control-Allow-Credentials':true
-              });
-              var readStream = fs.createReadStream(filePath);
-              readStream.pipe(res);  
-            }
-            
-        });
-      }
-    });    
+    res.writeHead(200, {
+        'Access-Control-Allow-Headers':'range',
+        'Content-Length': stat.size,
+        'Access-Control-Allow-Origin':'*',
+        'Access-Control-Allow-Credentials':true
+    });
+    var readStream = fs.createReadStream(filePath);
+    readStream.pipe(res); 
 });  
 
 server.get('/getChannels',function(req,res){
@@ -85,6 +56,31 @@ server.get('/getChannels',function(req,res){
 
 server.get('/recorder',function(req,res){
     res.sendFile(__dirname + '/views/recorder.html');
+});
+
+function searchM3U8File(channel,resolution, res){
+  var filePath = path.join("content/"+channel,'out'+resolution+'.m3u8');
+  var stat = fs.statSync(filePath);
+
+  res.writeHead(200, {
+      'Content-Type': 'application/x-mpegURL',
+      'Content-Length': stat.size,
+      'Access-Control-Allow-Origin':'*',
+      'Access-Control-Allow-Credentials':true
+  });
+  var readStream = fs.createReadStream(filePath);
+  readStream.pipe(res);
+}
+
+server.get('/:channel/hls',function(req,res){
+    var channel = req.params.channel;
+    searchM3U8File(channel,'', res);
+});
+
+server.get('/:channel/hls/:resolution',function(req,res){
+    var channel = req.params.channel.toString();
+    var resolution = req.params.resolution.toString();
+    searchM3U8File(channel,resolution, res);
 });
 
 server.get('/mock',function(req,res){
@@ -111,6 +107,10 @@ server.get('/video.js',function(req,res){
     res.sendFile(__dirname + '/static/js/video.js');
 });
 
+server.get('/:channel/video.js',function(req,res){
+    res.sendFile(__dirname + '/static/js/video.js');
+});
+
 server.get('/get-stream.js',function(req,res){
     res.sendFile(__dirname + '/static/js/get-stream.js');
 });
@@ -132,6 +132,10 @@ server.get('/binary.min.js',function(req,res){
 });
 
 server.get('/video',function(req,res){
+    res.sendFile(__dirname + '/views/video.html');
+});
+
+server.get('/:channel/video',function(req,res){
     res.sendFile(__dirname + '/views/video.html');
 });
 

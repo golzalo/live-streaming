@@ -10,7 +10,7 @@ var Channel = function (channelName) {
 	var seed = Math.floor(Math.random()*100000);
 	this.channelName = channelName.toString()+"_"+seed;
 	this.id = this.channelName.toString().hashCode();
-	redisCli.sadd("allchannels", this.channelName);
+	redisCli.sadd("allchannels", this.channelName+":"+this.id);
 };
 
 Channel.prototype.stream = function (chunk) {

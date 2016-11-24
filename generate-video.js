@@ -2,10 +2,13 @@ var redis = require("redis");
 var fs = require("fs");
 var path = require('path');
 var exec = require('child_process').exec;
+var getDuration = require('get-video-duration');
+
 
 var redisCli = redis.createClient({'return_buffers': true});
 var videoSubscriber = redis.createClient();
 var buffer = [];
+var DUMP_LINE = "#EXT-X-DISCONTINUITY\n#EXTINF:##TIME##,\n##FILE##\n";
 
 videoSubscriber.subscribe("process");
 
@@ -14,13 +17,21 @@ videoSubscriber.on("message", function(channel, data) {
 });
 
 var process = function (key, data) {
-	var cmd = "ffmpeg -i '"+data+"' -s 320x240 -crf 51 -preset ultrafast "+data.replace("640x480", key);
-	var channelName = data.split("/")[1]
-	var seconds = data.substring(data.indexOf(channelName+"/")+(channelName.length+1), data.indexOf("_"));
-	exec(cmd, function(error, stdout, stderr){
-		redisCli.set(channelName+"_"+key,seconds);
-    	redisCli.expire(channelName+"_"+key, 190);
+  var channelName = data.split("/")[1];
+  var fileName = data.split("/")[2];
+  var newFileName = (fileName.replace("640x480", key)).replace("webm", "ts");
+  var finalPath = "content/"+channelName+"/"+newFileName;
+  var cmd = "ffmpeg -i '"+data+"' -vcodec libx264 -s "+key+" -crf 51 -preset ultrafast "+finalPath;
+	var miliseconds = data.substring(data.indexOf(channelName+"/")+(channelName.length+1), data.indexOf("_"));
+  exec(cmd, function(error, stdout, stderr){
+    getDuration(finalPath).then(function (duration) {
+      var m3u8File = "content/"+channelName+"/out.m3u8";
+      var url = "/getwebm/"+channelName+"/"+newFileName;
+      var final_line = (DUMP_LINE.replace('##TIME##', duration)).replace('##FILE##', url);
+      fs.appendFile(m3u8File, final_line, function (err) {});
     });
+  })
+    
 }
 
 
