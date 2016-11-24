@@ -21,7 +21,7 @@ var process = function (key, data) {
   var fileName = data.split("/")[2];
   var newFileName = (fileName.replace("640x480", key)).replace("webm", "ts");
   var finalPath = "content/"+channelName+"/"+newFileName;
-  var cmd = "ffmpeg -i '"+data+"' -vcodec libx264 -s "+key+" -crf 51 -preset ultrafast "+finalPath;
+  var cmd = "ffmpeg -i '"+data+"' -c:a libfdk_aac -vcodec libx264 -s "+key+" -crf 51 -preset ultrafast "+finalPath;
 	var miliseconds = data.substring(data.indexOf(channelName+"/")+(channelName.length+1), data.indexOf("_"));
   exec(cmd, function(error, stdout, stderr){
     getDuration(finalPath).then(function (duration) {
