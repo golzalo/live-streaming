@@ -5,7 +5,6 @@ path = require('path');
 var redisCli = redis.createClient({'return_buffers': true});
 var videoSubscriber = redis.createClient();
 var buffer = [];
-var HEADER = "#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-TARGETDURATION:3\n#EXT-X-MEDIA-SEQUENCE:0\n";
 
 videoSubscriber.subscribe("channels");
 
@@ -15,17 +14,21 @@ videoSubscriber.on("message", function(channel, data) {
 
 var process = function (channel, data) {
   var miliseconds = new Date().getTime();
-  var m3u8File = "content/"+channel+"/out.m3u8";
   if (!fs.existsSync("content/"+channel)){
     fs.mkdirSync("content/"+channel);
-    fs.appendFile(m3u8File, HEADER, function(err) {});
+    fs.createReadStream("content/out.m3u8.template").pipe(fs.createWriteStream("content/"+channel+"/out.m3u8"));
+    fs.createReadStream("content/outN.m3u8.template").pipe(fs.createWriteStream("content/"+channel+"/out640x480.m3u8"));
+    fs.createReadStream("content/outN.m3u8.template").pipe(fs.createWriteStream("content/"+channel+"/out320x240.m3u8"));
+    fs.createReadStream("content/outN.m3u8.template").pipe(fs.createWriteStream("content/"+channel+"/out160x120.m3u8"));
   }
   var filename = "content/"+channel+"/"+miliseconds+"_640x480.webm";
   fs.writeFile(filename, data, "binary", function(err) {});
+  redisCli.lpush("640x480", filename);
+  redisCli.publish("process", "640x480");
   redisCli.lpush("320x240", filename);
   redisCli.publish("process", "320x240");
-  //redisCli.lpush("160x120", filename);
-  //redisCli.publish("process", "160x120");
+  redisCli.lpush("160x120", filename);
+  redisCli.publish("process", "160x120");
 }
 
 function loop(){

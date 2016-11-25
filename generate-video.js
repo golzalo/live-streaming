@@ -1,9 +1,8 @@
 var redis = require("redis");
 var fs = require("fs");
 var path = require('path');
-var exec = require('child_process').exec;
 var getDuration = require('get-video-duration');
-
+var ffmpeg = require('fluent-ffmpeg');
 
 var redisCli = redis.createClient({'return_buffers': true});
 var videoSubscriber = redis.createClient();
@@ -23,17 +22,21 @@ var process = function (key, data) {
   var fileName = data.split("/")[2];
   var newFileName = (fileName.replace("640x480", key)).replace("webm", "ts");
   var finalPath = "content/"+channelName+"/"+newFileName;
-  var cmd = "ffmpeg -i '"+data+"' -c:a libfdk_aac -vcodec libx264 -s "+key+" -preset ultrafast "+finalPath;
-	var miliseconds = data.substring(data.indexOf(channelName+"/")+(channelName.length+1), data.indexOf("_"));
-  exec(cmd, function(error, stdout, stderr){
-    getDuration(finalPath).then(function (duration) {
-      var m3u8File = "content/"+channelName+"/out.m3u8";
-      var url = "/getwebm/"+channelName+"/"+newFileName;
-      fs.appendFile(m3u8File, final_line, function (err) {});
-      final_line = (DUMP_LINE.replace('##TIME##', duration)).replace('##FILE##', url);
-      
-    });
+  var command = ffmpeg(data)
+    .audioCodec('libfdk_aac')
+    .videoCodec('libx264')
+    .size(key)
+    .output(finalPath)
+    .addOptions(['-preset fast'])
+    .on('end', function() {
+      getDuration(finalPath).then(function (duration) {
+        var m3u8File = "content/"+channelName+"/out"+key+".m3u8";
+        var url = "/getwebm/"+channelName+"/"+newFileName;
+        setTimeout(function () {fs.appendFile(m3u8File, final_line, function (err) {})}, 500);
+        var final_line = (DUMP_LINE.replace('##TIME##', duration)).replace('##FILE##', url);
+      });
   })
+  .run();
     
 }
 
