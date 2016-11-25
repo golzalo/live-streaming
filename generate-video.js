@@ -16,6 +16,8 @@ videoSubscriber.on("message", function(channel, data) {
 	buffer.push(data);
 });
 
+var final_line = "";
+
 var process = function (key, data) {
   var channelName = data.split("/")[1];
   var fileName = data.split("/")[2];
@@ -27,8 +29,9 @@ var process = function (key, data) {
     getDuration(finalPath).then(function (duration) {
       var m3u8File = "content/"+channelName+"/out.m3u8";
       var url = "/getwebm/"+channelName+"/"+newFileName;
-      var final_line = (DUMP_LINE.replace('##TIME##', duration)).replace('##FILE##', url);
       fs.appendFile(m3u8File, final_line, function (err) {});
+      final_line = (DUMP_LINE.replace('##TIME##', duration)).replace('##FILE##', url);
+      
     });
   })
     

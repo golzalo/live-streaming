@@ -5,7 +5,7 @@ path = require('path');
 var redisCli = redis.createClient({'return_buffers': true});
 var videoSubscriber = redis.createClient();
 var buffer = [];
-var HEADER = "#EXTM3U\n#EXT-X-VERSION:3\n#EXT-X-TARGETDURATION:9\n#EXT-X-MEDIA-SEQUENCE:0\n";
+var HEADER = "#EXTM3U\n#EXT-X-PLAYLIST-TYPE:EVENT\n#EXT-X-TARGETDURATION:3\n#EXT-X-MEDIA-SEQUENCE:0\n";
 
 videoSubscriber.subscribe("channels");
 
