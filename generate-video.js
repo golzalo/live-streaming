@@ -28,10 +28,10 @@ var process = function (key, data) {
   var finalPath = "content/"+channelName+"/"+newFileName;
   var id = fileName.split("_")[0];
   var command = ffmpeg(data)
-    .audioCodec('libfdk_aac')
+    //.audioCodec('libfdk_aac')
     .videoCodec('libx264')
     .size(key)
-    .addOptions(['-preset fast'])
+    .addOptions(['-an','-preset fast'])
     .on('end', function() {
       getDuration(finalPath).then(function (duration) {
         var m3u8File = "content/"+channelName+"/out"+key+".m3u8";
