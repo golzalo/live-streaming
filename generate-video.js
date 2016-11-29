@@ -31,7 +31,7 @@ var process = function (key, data) {
     .audioCodec('libfdk_aac')
     .videoCodec('libx264')
     .size(key)
-    .addOptions(['-preset fast'])
+    .addOptions(['-async 1','-analyzeduration 999999999','-preset fast'])
     .on('end', function() {
       getDuration(finalPath).then(function (duration) {
         var m3u8File = "content/"+channelName+"/out"+key+".m3u8";

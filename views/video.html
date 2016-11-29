@@ -8,7 +8,13 @@
 <script src="video.js"></script>
 <script src="video-hls.js"></script>
 <script>
-var player = videojs('example-video');
-player.play();
+try{
+	console.log("empezando");
+	var player = videojs('example-video');
+	player.play();	
+}catch (e){
+	console.log("gonzaaaa: ", e);
+}
+
 </script>
 </body></html>
