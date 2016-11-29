@@ -107,8 +107,16 @@ server.get('/video.js',function(req,res){
     res.sendFile(__dirname + '/static/js/video.js');
 });
 
+server.get('/video-hls.js',function(req,res){
+    res.sendFile(__dirname + '/static/js/video-hls.js');
+});
+
 server.get('/:channel/video.js',function(req,res){
     res.sendFile(__dirname + '/static/js/video.js');
+});
+
+server.get('/:channel/video-hls.js',function(req,res){
+    res.sendFile(__dirname + '/static/js/video-hls.js');
 });
 
 server.get('/get-stream.js',function(req,res){
