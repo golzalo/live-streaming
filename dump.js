@@ -24,11 +24,17 @@ var process = function (channel, data) {
   var filename = "content/"+channel+"/"+miliseconds+"_640x480.webm";
   fs.writeFile(filename, data, "binary", function(err) {});
   redisCli.lpush("640x480", filename);
+  redisCli.lpush("640x480_audio", filename);
   redisCli.publish("process", "640x480");
+  redisCli.publish("process-audio", "640x480_audio");
   /*redisCli.lpush("320x240", filename);
+  redisCli.lpush("320x240_audio", filename);
   redisCli.publish("process", "320x240");
+  redisCli.publish("process-audio", "320x240_audio");
   redisCli.lpush("160x120", filename);
-  redisCli.publish("process", "160x120");*/
+  redisCli.lpush("160x120_audio", filename);
+  redisCli.publish("process", "160x120");
+  redisCli.publish("process-audio", "160x120_audio");*/
 }
 
 function loop(){
