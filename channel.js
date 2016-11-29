@@ -14,8 +14,8 @@ var Channel = function (channelName) {
 };
 
 Channel.prototype.stream = function (chunk) {
-	videoPublisher.publish("channels",this.id);
  	redisCli.lpush(this.id,chunk);
+	videoPublisher.publish("channels",this.id);
 };
 
 Channel.prototype.close = function () {
