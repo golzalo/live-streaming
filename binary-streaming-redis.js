@@ -12,10 +12,6 @@ var redisCli = redis.createClient();
 
 var SERVER_PORT = 8080;
 
-function getChannelNameFromUrl(url){
-  return url.split('?')[1].split('=')[1];
-}
-
 //GET VIDEO FROM BROWSER AND PUBLISH TO REDIS
 videoServer.on('connection', function(client){
   var channel;
@@ -83,18 +79,6 @@ server.get('/:channel/hls/:resolution',function(req,res){
     searchM3U8File(channel,resolution, res);
 });
 
-server.get('/mock',function(req,res){
-    res.sendFile(__dirname + '/views/mock.html');
-});
-
-server.get('/styles.css',function(req,res){
-    res.sendFile(__dirname + '/static/css/styles.css');
-});
-
-server.get('/rediscope.png',function(req,res){
-    res.sendFile(__dirname + '/static/img/rediscope.png');
-});
-
 server.get('/recorder.js',function(req,res){
     res.sendFile(__dirname + '/static/js/recorder.js');
 });
@@ -117,18 +101,6 @@ server.get('/:channel/video.js',function(req,res){
 
 server.get('/:channel/video-hls.js',function(req,res){
     res.sendFile(__dirname + '/static/js/video-hls.js');
-});
-
-server.get('/get-stream.js',function(req,res){
-    res.sendFile(__dirname + '/static/js/get-stream.js');
-});
-
-server.get('/bitrate.js',function(req,res){
-    res.sendFile(__dirname + '/static/js/bitrate.js');
-});
-
-server.get('/modernizr.min.js',function(req,res){
-    res.sendFile(__dirname + '/static/js/modernizr.min.js');
 });
 
 server.get('/jquery.min.js',function(req,res){
