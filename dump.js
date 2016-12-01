@@ -25,10 +25,10 @@ var process = function (channel, data) {
   fs.writeFile(filename, data, "binary", function(err) {});
   redisCli.lpush("640x480", filename);
   redisCli.publish("process", "640x480");
-  /*redisCli.lpush("320x240", filename);
+  redisCli.lpush("320x240", filename);
   redisCli.publish("process", "320x240");
   redisCli.lpush("160x120", filename);
-  redisCli.publish("process", "160x120");*/
+  redisCli.publish("process", "160x120");
 }
 
 function loop(){
